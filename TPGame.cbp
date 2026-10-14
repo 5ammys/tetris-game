@@ -43,43 +43,18 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="structures/Enemy.c">
+		<Unit filename="structures/Board.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="structures/Enemy.h" />
-		<Unit filename="structures/Entities.h" />
+		<Unit filename="structures/Board.h" />
 		<Unit filename="structures/Game.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures/Game.h" />
-		<Unit filename="structures/GameObject.c">
+		<Unit filename="structures/Piece.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="structures/GameObject.h" />
-		<Unit filename="structures/InputHandler.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="structures/InputHandler.h" />
-		<Unit filename="structures/Object.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="structures/Object.h" />
-		<Unit filename="structures/Player.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="structures/Player.h" />
-		<Unit filename="structures/TextureManager.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="structures/TextureManager.h" />
-		<Unit filename="structures/Vector.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="structures/Vector.h" />
-		<Unit filename="structures/Vector2D.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="structures/Vector2D.h" />
+		<Unit filename="structures/Piece.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

@@ -15,13 +15,14 @@ int main(int argc, char *argv[]) {
     Uint32 frameStart, frameTime;
 
     Game* game = Game_create();
+
     if(!game) {
         fprintf(stderr, "Error: no se pudo crear el juego.\n");
         return 1;
     }
 
     Game_init(game,
-              "Tetris - ",
+              "Tetris - TheVoids",
               SDL_WINDOWPOS_CENTERED,
               SDL_WINDOWPOS_CENTERED,
               WINDOW_W,

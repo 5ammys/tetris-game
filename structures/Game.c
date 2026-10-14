@@ -1,7 +1,5 @@
 #include "Game.h"
 
-static Game* game = NULL;
-
 Game* Game_create(){
   Game* game = (Game*)malloc(sizeof(Game));
 
@@ -20,11 +18,12 @@ Game* Game_create(){
 void Game_restart(Game* game){
   Board_create(&game->board);
   game->isGameOver = false;
-  game->currentPiece = Piece_createRandom();
-  game->nextPiece = Piece_createRandom();
+
+  game->currentPiece = Piece_createRandom(&game->piecesVector);
+  game->nextPiece = Piece_createRandom(&game->piecesVector);
   game->lastDropTime = SDL_GetTicks();
   game->dropInterval = 1000;
-  SDL_SetWindowTitle(game->window, "Tetris");
+  SDL_SetWindowTitle(game->window, "Tetris - TheVoids");
 }
 
 void Game_init(Game* game, const char* title, int x, int y, int w, int h, int flags, int delay){
@@ -47,22 +46,26 @@ void Game_init(Game* game, const char* title, int x, int y, int w, int h, int fl
 
   srand((unsigned int) time(NULL));
 
+  Piece_createAndLoadPiecesInVector(&game->piecesVector);
+
   game->isRunning   = true;
   game->isGameOver  = false;
-
   Board_create(&game->board);
-  game->currentPiece = Piece_createRandom();
-  game->nextPiece    = Piece_createRandom();
+  game->currentPiece = Piece_createRandom(&game->piecesVector);
+  game->nextPiece    = Piece_createRandom(&game->piecesVector);
   game->lastDropTime = SDL_GetTicks();
   game->dropInterval = 1000;
 }
 
 void Game_update(Game* game){
+  if (game->isGameOver) return;
+
+
   // Update game logic here
 }
 
 void Game_render(Game* game){
-  SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(game->renderer, 0, 30, 0, 255);
   SDL_RenderClear(game->renderer);
 
   //Renderizar tablero, piezas
@@ -100,6 +103,7 @@ void Game_clean(Game* game){
   SDL_DestroyRenderer(game->renderer);
   SDL_DestroyWindow(game->window);
   SDL_Quit();
+  Vector_destroy(&game->piecesVector);
   free(game);
 }
 

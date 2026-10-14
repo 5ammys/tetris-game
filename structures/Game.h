@@ -10,6 +10,7 @@
 
 #include "Board.h"
 #include "Piece.h"
+#include "Vector.h"
 
 #define WINDOW_W 500
 #define WINDOW_H 640
@@ -24,6 +25,7 @@ typedef struct{
   bool isRunning;
 
   Board board;
+  Vector piecesVector;
   Piece currentPiece;
   Piece nextPiece;
 
