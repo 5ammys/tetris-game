@@ -17,8 +17,8 @@ typedef struct{
 }Board;
 
 void Board_create(Board *b);
-
 bool Board_isValidPosition(Board *b, Piece *piece, int x, int y);
+int Board_clearLines(Board *b);
 
 
 

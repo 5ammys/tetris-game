@@ -1,13 +1,13 @@
 #ifndef PIECE_H_INCLUDED
 #define PIECE_H_INCLUDED
+#include <SDL2/SDL.h>
 
-#include "Vector.h"
 #define PIECE_GRID_SIZE 4
 
 typedef enum{
     PIECE_I=0,
     PIECE_T,
-    PIECE_O,
+    PIECE_0,
     PIECE_S,
     PIECE_Z,
     PIECE_J,
@@ -16,22 +16,15 @@ typedef enum{
 }PieceType;
 
 typedef struct{
-    int shape[PIECE_GRID_SIZE][PIECE_GRID_SIZE];
     PieceType type;
+    int rotation;
     int row;
     int col;
 }Piece;
 
-int Piece_createAndLoadPiecesInVector(Vector *v);
-
-Piece Piece_createRandom(Vector* v);
-
-void Piece_rotate(Piece* p);
-
-void Piece_moveRow(Piece* p, int dRow);
-
-void Piece_moveCol(Piece* p, int dCol);
-
-
+Piece Piece_create(PieceType type);
+Piece Piece_createRandom();
+int Piece_getBlock(PieceType type, int rotation, int r, int c);
+SDL_Color Piece_getColor(PieceType type);
 
 #endif // PIECE_H_INCLUDED
