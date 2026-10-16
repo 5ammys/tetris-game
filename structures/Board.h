@@ -20,6 +20,18 @@ void Board_create(Board *b);
 
 bool Board_isValidPosition(Board *b, Piece *piece, int x, int y);
 
+int Board_getDropInterval(Board* b);
 
+bool Board_lockPiece(Board *b, const Piece *piece);
+
+int Board_clearLines(Board *b);
+
+void Board_updateScore(Board *b, int linesCleared);
+
+bool Board_isGameOver(const Board *b);
+
+void Board_draw(const Board *b, SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize);
+
+void Board_drawGrid(SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize);
 
 #endif // BOARD_H_INCLUDED

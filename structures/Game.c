@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "Board.h"
+#include "Piece.h"
 
 Game* Game_create(){
   Game* game = (Game*)malloc(sizeof(Game));
@@ -60,8 +62,12 @@ void Game_init(Game* game, const char* title, int x, int y, int w, int h, int fl
 void Game_update(Game* game){
   if (game->isGameOver) return;
 
+  Uint32 now = SDL_GetTicks();
 
-  // Update game logic here
+  game->dropInterval = getDropInterval(game->board);
+
+  
+
 }
 
 void Game_render(Game* game){
@@ -73,30 +79,75 @@ void Game_render(Game* game){
   SDL_RenderPresent(game->renderer);
 }
 
-void Game_handleEvents(Game* game){
-  SDL_Event event;
-  while(SDL_PollEvent(&event)){
+void Game_handleEvents(Game* game) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
 
-    if(event.type == SDL_QUIT) {
-      game->isRunning = false;
-      return;
+        if (event.type == SDL_QUIT) {
+            game->isRunning = false;
+            return;
+        }
+
+        if (event.type == SDL_KEYDOWN) {
+            SDL_Keycode key = event.key.keysym.sym;
+
+            if (key == SDLK_ESCAPE) {
+                game->isRunning = false;
+                return;
+            }
+
+            if (key == SDLK_r && game->isGameOver) {
+                Game_restart(game);
+                return;
+            }
+
+            if (game->isGameOver) return;
+
+            switch (key) {
+                case SDLK_LEFT:
+                    if (Board_isValidPosition(
+                            game->board, 
+                            &game->currentPiece, 
+                            game->currentPiece.row, 
+                            game->currentPiece.col - 1
+                    )) {
+                        Piece_moveCol(&game->currentPiece, -1);
+                    }
+                    break;
+
+                case SDLK_RIGHT:
+                    if (Board_isValidPosition(
+                            game->board, 
+                            &game->currentPiece, 
+                            game->currentPiece.row, 
+                            game->currentPiece.col + 1
+                    )) {
+                        Piece_moveCol(&game->currentPiece, 1);
+                    }
+                    break;
+
+                case SDLK_UP: {
+                    if (event.key.repeat) break;
+
+                    Piece temp = game->currentPiece;
+                    Piece_rotate(&temp);
+
+                    if (Board_isValidPosition(game->board, &temp, temp.row, temp.col)) {
+                        game->currentPiece = temp;
+                    } 
+                    else if (Board_isValidPosition(game->board, &temp, temp.row, temp.col + 1)) {
+                        temp.col += 1;
+                        game->currentPiece = temp;
+                    } 
+                    else if (Board_isValidPosition(game->board, &temp, temp.row, temp.col - 1)) {
+                        temp.col -= 1;
+                        game->currentPiece = temp;
+                    }
+                    break;
+                }
+            }
+        }
     }
-
-    if(event.type == SDL_KEYDOWN){
-      SDL_Keycode key = event.key.keysym.sym;
-
-      if(key == SDLK_ESCAPE){
-        game->isRunning = false;
-        return;
-      }
-
-      //Agregar: Comandos para controlar el juego
-    }
-  }
-
-  /*
-    Manejar I/O
-  */
 }
 
 void Game_clean(Game* game){
