@@ -108,7 +108,7 @@ void Board_drawGhost(const Board *b, const Piece *p, SDL_Renderer *renderer, int
 
     SDL_Color color = Piece_getColor(ghost.type);
 
-    // Habilitar mezcla Alpha para la transparencia (167)
+    // Habilitar mezcla Alpha para la transparencia
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer,
         (Uint8)(color.r * 0.6f),

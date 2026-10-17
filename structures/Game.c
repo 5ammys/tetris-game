@@ -15,17 +15,6 @@ Game* Game_create(){
   return game;
 }
 
-void Game_restart(Game* game){
-  Board_create(&game->board);
-  game->isGameOver = false;
-
-  game->currentPiece = Piece_createRandom(&game->piecesVector);
-  game->nextPiece = Piece_createRandom(&game->piecesVector);
-  game->lastDropTime = SDL_GetTicks();
-  game->dropInterval = 1000;
-  SDL_SetWindowTitle(game->window, "Tetris - TheVoids");
-}
-
 void Game_init(Game* game, const char* title, int x, int y, int w, int h, int flags, int delay){
   if(SDL_Init(SDL_INIT_VIDEO) < 0){
     SDL_Log("Failed to initialize SDL: %s\n", SDL_GetError());
@@ -56,6 +45,18 @@ void Game_init(Game* game, const char* title, int x, int y, int w, int h, int fl
   game->lastDropTime = SDL_GetTicks();
   game->dropInterval = 1000;
 }
+
+void Game_restart(Game* game){
+  Board_create(&game->board);
+  game->isGameOver = false;
+
+  game->currentPiece = Piece_createRandom(&game->piecesVector);
+  game->nextPiece = Piece_createRandom(&game->piecesVector);
+  game->lastDropTime = SDL_GetTicks();
+  game->dropInterval = 1000;
+  SDL_SetWindowTitle(game->window, "Tetris - TheVoids");
+}
+
 
 void Game_update(Game* game){
   if (game->isGameOver) return;
@@ -123,6 +124,12 @@ void Game_render(Game* game){
   }
 
   Piece_draw(&game->currentPiece, r, BOARD_OFFSET_X, BOARD_OFFSET_Y, BOARD_CELLS_SIZE);
+
+  Panel_render(r,&game->nextPiece, game->board.score, game->board.level, game->board.linesCleared);
+
+  if(game->isGameOver){
+    Panel_gameOver(r);
+  }
 
   SDL_RenderPresent(r);
 }

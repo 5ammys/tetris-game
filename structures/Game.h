@@ -11,6 +11,7 @@
 #include "Board.h"
 #include "Piece.h"
 #include "Vector.h"
+#include "Panel.h"
 
 #define WINDOW_W 500
 #define WINDOW_H 640

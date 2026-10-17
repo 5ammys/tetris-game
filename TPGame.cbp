@@ -51,6 +51,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures/Game.h" />
+		<Unit filename="structures/Panel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="structures/Panel.h" />
 		<Unit filename="structures/Piece.c">
 			<Option compilerVar="CC" />
 		</Unit>

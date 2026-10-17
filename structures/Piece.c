@@ -34,7 +34,15 @@ int Piece_createAndLoadPiecesInVector(Vector *v){
     return 1;
 }
 
+Piece Piece_createRandom(Vector* v) {
+    Piece p;
+    int index_random = rand() % PIECE_COUNT;
 
+    // Se copia la pieza del catálogo a la variable local 'p'
+    Vector_getByPos(v, index_random, &p, sizeof(Piece));
+
+    return p;
+}
 
 void Piece_rotate(Piece* p) {
     if (!p) return;
@@ -51,15 +59,7 @@ void Piece_rotate(Piece* p) {
     memcpy(p->shape, temp, sizeof(temp));
 }
 
-Piece Piece_createRandom(Vector* v) {
-    Piece p;
-    int index_random = rand() % PIECE_COUNT;
 
-    // Se copia la pieza del catálogo a la variable local 'p'
-    Vector_getByPos(v, index_random, &p, sizeof(Piece));
-
-    return p;
-}
 
 void Piece_moveRow(Piece* p, int dRow){
     if(!p) return;
