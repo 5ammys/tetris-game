@@ -1,6 +1,4 @@
 #include "Game.h"
-#include "Board.h"
-#include "Piece.h"
 
 Game* Game_create(){
   Game* game = (Game*)malloc(sizeof(Game));
@@ -64,19 +62,69 @@ void Game_update(Game* game){
 
   Uint32 now = SDL_GetTicks();
 
-  game->dropInterval = getDropInterval(game->board);
+  game->dropInterval = Board_getDropInterval(&game->board);
 
-  
+  if(now - game->lastDropTime >= (Uint32)game->dropInterval){
+    game->lastDropTime = now;
+
+    if(Board_isValidPosition(&game->board, &game->currentPiece,
+                             game->currentPiece.row + 1,
+                             game->currentPiece.col)){
+      Piece_moveRow(&game->currentPiece, 1);
+    } else {
+      Board_lockPiece(&game->board, &game->currentPiece);
+
+      int lines = Board_clearLines(&game->board);
+      if(lines > 0){
+        Board_updateScore(&game->board, lines);
+      }
+
+      game->currentPiece = game->nextPiece;
+      game->nextPiece    = Piece_createRandom(&game->piecesVector);
+
+      if(!Board_isValidPosition(&game->board, &game->currentPiece,
+                                game->currentPiece.row,
+                                game->currentPiece.col)){
+        game->isGameOver = true;
+        SDL_SetWindowTitle(game->window, "Tetris - GAME OVER (R para reiniciar)");
+      } else {
+        char title[128];
+        sprintf(title, "Tetris - Score: %d | Level: %d | Lines: %d",
+                game->board.score, game->board.level, game->board.linesCleared);
+        SDL_SetWindowTitle(game->window, title);
+      }
+    }
+  }
 
 }
 
 void Game_render(Game* game){
-  SDL_SetRenderDrawColor(game->renderer, 0, 30, 0, 255);
-  SDL_RenderClear(game->renderer);
+  SDL_Renderer* r = game->renderer;
 
-  //Renderizar tablero, piezas
+  SDL_SetRenderDrawColor(r, 8, 8, 18, 255);
+  SDL_RenderClear(r);
 
-  SDL_RenderPresent(game->renderer);
+  SDL_Rect boardBg = {
+    .x = BOARD_OFFSET_X,
+    .y = BOARD_OFFSET_Y,
+    .w = BOARD_COLS * BOARD_CELLS_SIZE,
+    .h = BOARD_ROWS * BOARD_CELLS_SIZE
+  };
+
+  SDL_SetRenderDrawColor(r, 18, 18, 35, 255);
+  SDL_RenderFillRect(r, &boardBg);
+
+  Board_draw(&game->board, r, BOARD_OFFSET_X, BOARD_OFFSET_Y, BOARD_CELLS_SIZE);
+
+  Board_drawGrid(r, BOARD_OFFSET_X, BOARD_OFFSET_Y, BOARD_CELLS_SIZE);
+
+  if(!game->isGameOver){
+    Board_drawGhost(&game->board, &game->currentPiece, r, BOARD_OFFSET_X, BOARD_OFFSET_Y, BOARD_CELLS_SIZE);
+  }
+
+  Piece_draw(&game->currentPiece, r, BOARD_OFFSET_X, BOARD_OFFSET_Y, BOARD_CELLS_SIZE);
+
+  SDL_RenderPresent(r);
 }
 
 void Game_handleEvents(Game* game) {
@@ -106,9 +154,9 @@ void Game_handleEvents(Game* game) {
             switch (key) {
                 case SDLK_LEFT:
                     if (Board_isValidPosition(
-                            game->board, 
-                            &game->currentPiece, 
-                            game->currentPiece.row, 
+                            &game->board,
+                            &game->currentPiece,
+                            game->currentPiece.row,
                             game->currentPiece.col - 1
                     )) {
                         Piece_moveCol(&game->currentPiece, -1);
@@ -117,13 +165,38 @@ void Game_handleEvents(Game* game) {
 
                 case SDLK_RIGHT:
                     if (Board_isValidPosition(
-                            game->board, 
-                            &game->currentPiece, 
-                            game->currentPiece.row, 
+                            &game->board,
+                            &game->currentPiece,
+                            game->currentPiece.row,
                             game->currentPiece.col + 1
                     )) {
                         Piece_moveCol(&game->currentPiece, 1);
                     }
+                    break;
+
+                case SDLK_DOWN:
+                    if (Board_isValidPosition(
+                            &game->board,
+                            &game->currentPiece,
+                            game->currentPiece.row + 1,
+                            game->currentPiece.col
+                    )) {
+                        Piece_moveRow(&game->currentPiece, 1);
+                        game->lastDropTime = SDL_GetTicks();
+                    }
+                    break;
+
+                case SDLK_SPACE:
+                    if (event.key.repeat) break;
+                    while (Board_isValidPosition(
+                            &game->board,
+                            &game->currentPiece,
+                            game->currentPiece.row + 1,
+                            game->currentPiece.col
+                    )) {
+                        Piece_moveRow(&game->currentPiece, 1);
+                    }
+                    game->lastDropTime = 0;
                     break;
 
                 case SDLK_UP: {
@@ -132,14 +205,14 @@ void Game_handleEvents(Game* game) {
                     Piece temp = game->currentPiece;
                     Piece_rotate(&temp);
 
-                    if (Board_isValidPosition(game->board, &temp, temp.row, temp.col)) {
+                    if (Board_isValidPosition(&game->board, &temp, temp.row, temp.col)) {
                         game->currentPiece = temp;
-                    } 
-                    else if (Board_isValidPosition(game->board, &temp, temp.row, temp.col + 1)) {
+                    }
+                    else if (Board_isValidPosition(&game->board, &temp, temp.row, temp.col + 1)) {
                         temp.col += 1;
                         game->currentPiece = temp;
-                    } 
-                    else if (Board_isValidPosition(game->board, &temp, temp.row, temp.col - 1)) {
+                    }
+                    else if (Board_isValidPosition(&game->board, &temp, temp.row, temp.col - 1)) {
                         temp.col -= 1;
                         game->currentPiece = temp;
                     }

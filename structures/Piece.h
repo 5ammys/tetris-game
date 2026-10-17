@@ -2,8 +2,9 @@
 #define PIECE_H_INCLUDED
 
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 #include "Vector.h"
-#include "Board.h"
+
 #define PIECE_GRID_SIZE 4
 
 typedef enum{
@@ -34,9 +35,11 @@ void Piece_moveRow(Piece* p, int dRow);
 
 void Piece_moveCol(Piece* p, int dCol);
 
+void Piece_drawEx(const Piece* p, SDL_Renderer* renderer, int offsetX, int offsetY, int cellSize, bool useGridPosition);
+
 void Piece_draw(const Piece* p, SDL_Renderer* renderer, int offsetX, int offsetY, int cellSize);
 
-void Piece_drawAt(const Piece* p, SDL_Renderer* renderer, int screenX, int screenY, int cellSize);
+void Piece_drawAt(const Piece *p, SDL_Renderer *renderer, int screenX, int screenY, int cellSize);
 
 SDL_Color Piece_getColor(PieceType type);
 

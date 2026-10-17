@@ -7,7 +7,7 @@
 
 #define BOARD_ROWS 20
 #define BOARD_COLS 10
-#define BOARD_CELLS_SIZE 20
+#define BOARD_CELLS_SIZE 30
 
 typedef struct{
   int cells[BOARD_ROWS][BOARD_COLS];
@@ -16,13 +16,14 @@ typedef struct{
   int linesCleared;
 }Board;
 
+
 void Board_create(Board *b);
 
-bool Board_isValidPosition(Board *b, Piece *piece, int x, int y);
+bool Board_isValidPosition(const Board *b, const Piece *p, int row, int col);
 
 int Board_getDropInterval(Board* b);
 
-bool Board_lockPiece(Board *b, const Piece *piece);
+void Board_lockPiece(Board *b, const Piece *p);
 
 int Board_clearLines(Board *b);
 
@@ -33,5 +34,7 @@ bool Board_isGameOver(const Board *b);
 void Board_draw(const Board *b, SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize);
 
 void Board_drawGrid(SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize);
+
+void Board_drawGhost(const Board *b, const Piece *p, SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize);
 
 #endif // BOARD_H_INCLUDED
