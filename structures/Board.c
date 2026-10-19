@@ -1,96 +1,197 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Board.h"
-#include "Piece.h"
 
-void Board_create(Board *b)
-{
+void Board_create(Board *b){
     memset(b->cells, 0, sizeof(b->cells));
     b->level=1;
     b->score=0;
     b->linesCleared=0;
 }
 
-bool Board_isValidPosition(Board *b, Piece *p, int x, int y)
-{
+bool Board_isValidPosition(const Board *b, const Piece *piece, int row, int col){
+    for(int r = 0; r < PIECE_GRID_SIZE; r++){
+        for(int c = 0; c < PIECE_GRID_SIZE; c++){
+            if(piece->shape[r][c]){
+                int newRow = row + r;
+                int newCol = col + c;
 
-    for (int r=0; r<PIECE_GRID_SIZE; r++) 
-    {
-            for (int c=0; c<PIECE_GRID_SIZE; c++) 
-            {
+                //verificar limites horizontales
+                if(newCol < 0 || newCol >= BOARD_COLS) return false;
 
-                //consulta si en esa celda de la pieza hay un bloque solido
-                if (Piece_getBlock(p->type, p->rotation, r, c)!=0) 
-                {
+                //verificar limite inferior
+                if(newRow >= BOARD_ROWS) return false;
 
-                    int boardCol=x+c;
-                    int boardRow=y+r;
-
-                    //validar limites laterales (izquierdo y derecho)
-                    if (boardCol<0 || boardCol>=BOARD_COLS) return false;
-
-                    //validar el piso (borde inferior)
-                    if (boardRow>=BOARD_ROWS) return false;
-
-                    //vValidar colision con bloques fijos del tablero
-                    // (solo si la fila ya ingreso a la parte visible del tablero, row >= 0)
-                    if (boardRow>=0) 
-                    {
-                        if (b->cells[boardRow][boardCol]!=0)  return false;
-                    }
-                }
+                //verificar colision con piezas bloqueadas
+                if(newRow >= 0 && b->cells[newRow][newCol] != 0) return false;
             }
+        }
     }
-        
-        //si paso todas las pruebas, la posicion es valida
-        return true;
+    return true;
 }
 
-int Board_clearLines(Board *b) 
-{
-    int linesCleared=0;
+int Board_getDropInterval(Board* b){
+    int level = b->level;
+    if(level >= 10) return 80;
+    return 1000 - (level - 1) * 92;
+}
 
-    for (int r=BOARD_ROWS-1; r>=0; r--) 
-    {
-        bool isFull=true;
+void Board_draw(const Board* b, SDL_Renderer* renderer,
+                int offsetX, int offsetY, int cellSize) {
+    int r, c;
 
-        //comprobar si la fila r esta completamente llena
-        for (int c=0; c<BOARD_COLS; c++) 
-        {
-            if (b->cells[r][c]==0) 
-            {
-                isFull=false;
-                break;
+    for(r = 0; r < BOARD_ROWS; r++) {
+        for(c = 0; c < BOARD_COLS; c++) {
+            int colorIdx = b->cells[r][c];
+            SDL_Color color;
+            if(colorIdx > 0 && colorIdx <= PIECE_COUNT) {
+                color = Piece_getColor((PieceType)(colorIdx - 1));
+            } else {
+                color = (SDL_Color){ 18, 18, 30, 255 }; //0 - vacio (fondo oscuro)
+            }
+            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+            SDL_Rect rect = {
+                offsetX + c * cellSize + 1,
+                offsetY + r * cellSize + 1,
+                cellSize - 2,
+                cellSize - 2
+            };
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+}
+
+void Board_drawGrid(SDL_Renderer* renderer, int offsetX, int offsetY, int cellSize) {
+    //lineas de la grilla en gris muy oscuro
+    SDL_SetRenderDrawColor(renderer, 45, 45, 60, 255);
+
+    int r, c;
+    for(r = 0; r <= BOARD_ROWS; r++) {
+        SDL_RenderDrawLine(renderer,
+            offsetX,
+            offsetY + r * cellSize,
+            offsetX + BOARD_COLS * cellSize,
+            offsetY + r * cellSize);
+    }
+    for(c = 0; c <= BOARD_COLS; c++) {
+        SDL_RenderDrawLine(renderer,
+            offsetX + c * cellSize,
+            offsetY,
+            offsetX + c * cellSize,
+            offsetY + BOARD_ROWS * cellSize);
+    }
+
+    //borde exterior mas brillante
+    SDL_SetRenderDrawColor(renderer, 120, 120, 160, 255);
+    SDL_Rect border = {
+        offsetX - 2,
+        offsetY - 2,
+        BOARD_COLS * cellSize + 4,
+        BOARD_ROWS * cellSize + 4
+    };
+    SDL_RenderDrawRect(renderer, &border);
+}
+
+void Board_drawGhost(const Board *b, const Piece *p, SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize) {
+    if (!b || !p || !renderer) return;
+
+    Piece ghost = *p;
+
+    //calcular la posicion mas baja posible
+    while (Board_isValidPosition(b, &ghost, ghost.row + 1, ghost.col)) {
+        ghost.row++;
+    }
+
+    //si coincide con la posicion de la pieza activa, no la dibujamos
+    if (ghost.row == p->row) return;
+
+    SDL_Color color = Piece_getColor(ghost.type);
+
+    //habilitar mezcla Alpha para la transparencia
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer,
+        (Uint8)(color.r * 0.6f),
+        (Uint8)(color.g * 0.6f),
+        (Uint8)(color.b * 0.6f),
+        255
+    );
+
+    for (int r = 0; r < PIECE_GRID_SIZE; r++) {
+        for (int c = 0; c < PIECE_GRID_SIZE; c++) {
+            if (ghost.shape[r][c]) {
+                int px = offsetX + (ghost.col + c) * cellSize;
+                int py = offsetY + (ghost.row + r) * cellSize;
+
+                SDL_Rect rect = { px + 1, py + 1, cellSize - 2, cellSize - 2 };
+                SDL_RenderDrawRect(renderer, &rect);
+            }
+        }
+    }
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
+int Board_clearLines(Board *b) {
+    int linesCleared = 0;
+
+    for(int r = BOARD_ROWS - 1; r >= 0; r--) {
+        bool isFull = true;
+        for(int c = 0; c < BOARD_COLS; c++) {
+            if(b->cells[r][c] == 0) {
+                isFull = false;
+                c = BOARD_COLS; //salir del bucle interno
             }
         }
 
-        //si la fila esta llena, la borramos desplazando las superiores
-        if (isFull) 
-        {
+        if(isFull) {
             linesCleared++;
-
-            //mover todas las filas superiores una celda hacia abajo
-            for (int y=r; y>0; y--) 
-            {
-                for (int c=0; c<BOARD_COLS; c++) 
-                {
-                    b->cells[y][c]=b->cells[y-1][c];
-                }
+            //mover todas las filas superiores hacia abajo
+            for(int rr = r; rr > 0; rr--) {
+                memcpy(b->cells[rr], b->cells[rr - 1], sizeof(b->cells[rr]));
             }
-
-            //vaciar la fila superior (fila 0)
-            for (int c=0; c<BOARD_COLS; c++) 
-            {
-                b->cells[0][c]=0;
-            }
-
-            //volver a evaluar la misma fila r, ya que ahora tiene los datos de la fila superior
+            //limpiar la fila superior
+            memset(b->cells[0], 0, sizeof(b->cells[0]));
+            //re-evaluar la misma fila ya que se ha movido hacia abajo
             r++;
         }
     }
 
-    //actualizar el acumulador de lineas limpiadas en el tablero
-    b->linesCleared+=linesCleared;
-
     return linesCleared;
+}
+
+void Board_updateScore(Board *b, int linesCleared) {
+    b->linesCleared += linesCleared;
+
+    //actualizar nivel cada 10 lineas
+    int newLevel = (b->linesCleared / 10) + 1;
+    if(newLevel > b->level) {
+        b->level = newLevel;
+    }
+
+    //puntos segun numero de lineas eliminadas
+    int points = 0;
+    switch(linesCleared) {
+        case 1: points = 100; break;
+        case 2: points = 300; break;
+        case 3: points = 500; break;
+        case 4: points = 800; break;
+        default: points = linesCleared * 200; break; //bonus por mas de 4 lineas
+    }
+    b->score += points * b->level; //multiplicador por nivel
+}
+
+void Board_lockPiece(Board *b, const Piece *p) {
+    for(int r = 0; r < PIECE_GRID_SIZE; r++) {
+        for(int c = 0; c < PIECE_GRID_SIZE; c++) {
+            if(p->shape[r][c]) {
+                int boardRow = p->row + r;
+                int boardCol = p->col + c;
+                if(boardRow >= 0 && boardRow < BOARD_ROWS &&
+                   boardCol >= 0 && boardCol < BOARD_COLS) {
+                    b->cells[boardRow][boardCol] = p->type + 1;
+                }
+            }
+        }
+    }
 }

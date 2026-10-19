@@ -1,13 +1,16 @@
 #ifndef PIECE_H_INCLUDED
 #define PIECE_H_INCLUDED
+
 #include <SDL2/SDL.h>
+#include <stdbool.h>
+#include "Vector.h"
 
 #define PIECE_GRID_SIZE 4
 
 typedef enum{
     PIECE_I=0,
     PIECE_T,
-    PIECE_0,
+    PIECE_O,
     PIECE_S,
     PIECE_Z,
     PIECE_J,
@@ -16,15 +19,28 @@ typedef enum{
 }PieceType;
 
 typedef struct{
+    int shape[PIECE_GRID_SIZE][PIECE_GRID_SIZE];
     PieceType type;
-    int rotation;
     int row;
     int col;
 }Piece;
 
-Piece Piece_create(PieceType type);
-Piece Piece_createRandom();
-int Piece_getBlock(PieceType type, int rotation, int r, int c);
+int Piece_createAndLoadPiecesInVector(Vector *v);
+
+Piece Piece_createRandom(Vector* v);
+
+void Piece_rotate(Piece* p);
+
+void Piece_moveRow(Piece* p, int dRow);
+
+void Piece_moveCol(Piece* p, int dCol);
+
+void Piece_drawEx(const Piece* p, SDL_Renderer* renderer, int offsetX, int offsetY, int cellSize, bool useGridPosition);
+
+void Piece_draw(const Piece* p, SDL_Renderer* renderer, int offsetX, int offsetY, int cellSize);
+
+void Piece_drawAt(const Piece *p, SDL_Renderer *renderer, int screenX, int screenY, int cellSize);
+
 SDL_Color Piece_getColor(PieceType type);
 
 #endif // PIECE_H_INCLUDED

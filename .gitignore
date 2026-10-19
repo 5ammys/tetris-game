@@ -3,10 +3,7 @@
 *.obj
 **/bin
 **/obj
-**/SDL2
-**/SDL_Image
 *.a
-*.dll
 *.pdb
 *.ilk
 *.idb

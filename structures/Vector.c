@@ -41,11 +41,11 @@ int Vector_append(Vector *v, void* elemento, size_t tamDato){
     return 1;
 }
 
-//Funcion para insertar en orden y no repetir
+//fncion para insertar en orden y no repetir
 int Vector_insertInOrderNoRepeat(Vector* v, void* elemento, size_t tamDato, Cmp cmp) {
 
     tNodo nodo;
-    nodo.dato = malloc(tamDato);  // Reservamos memoria para el nuevo dato
+    nodo.dato = malloc(tamDato);  //reservamos memoria para el nuevo dato
     if (!nodo.dato) return -1;
 
     memcpy(nodo.dato, elemento, tamDato);
@@ -55,10 +55,11 @@ int Vector_insertInOrderNoRepeat(Vector* v, void* elemento, size_t tamDato, Cmp 
 
     if(search){
         memcpy(search,nodo.dato,tamDato); //si lo encuentra lo reemplaza y retorna 2
+        free(nodo.dato);
         return 2;
     }
 
-    // Verificar si hay espacio para el nuevo elemento
+    //verificar si hay espacio para el nuevo elemento
     if (v->ce == v->tam) {
         if (_resize(v, v->tam + 2) == -1) {
             free(nodo.dato);
@@ -66,29 +67,29 @@ int Vector_insertInOrderNoRepeat(Vector* v, void* elemento, size_t tamDato, Cmp 
         }
     }
 
-    // Puntero al �ltimo nodo v�lido
+    //puntero al ultimo nodo valido
     tNodo* actual = v->vec + v->ce - 1;
 
-    // Puntero a la posici�n donde vamos a insertar
+    //puntero a la posicion donde vamos a insertar
     tNodo* destino = v->vec + v->ce;
 
-    // Desplazamos los elementos mayores
+    //desplazamos los elementos mayores
     while (actual >= v->vec && cmp(nodo.dato, actual->dato) < 0) {
         *destino = *actual;
         destino--;
         actual--;
     }
 
-    // Insertamos el nuevo nodo
+    //insertamos el nuevo nodo
     *destino = nodo;
     v->ce++;
     return 1;
 }
 
-// Funci�n para insertar en orden
+//funcion para insertar en orden
 int Vector_insertInOrder(Vector* v, void* elemento, size_t tamDato, Cmp cmp) {
 
-    // Verificar si hay espacio para el nuevo elemento
+    //verificar si hay espacio para el nuevo elemento
     if (v->ce == v->tam) {
         if (_resize(v, v->tam + 2) == -1) {
             return -1;
@@ -96,33 +97,33 @@ int Vector_insertInOrder(Vector* v, void* elemento, size_t tamDato, Cmp cmp) {
     }
 
     tNodo nodo;
-    nodo.dato = malloc(tamDato);  // Reservamos memoria para el nuevo dato
+    nodo.dato = malloc(tamDato);  //reservamos memoria para el nuevo dato
     if (!nodo.dato) return -1;
 
     memcpy(nodo.dato, elemento, tamDato);
     nodo.tam = tamDato;
 
-    // Puntero al �ltimo nodo v�lido
+    //puntero al ultimo nodo valido
     tNodo* actual = v->vec + v->ce - 1;
 
-    // Puntero a la posici�n donde vamos a insertar
+    //puntero a la posicion donde vamos a insertar
     tNodo* destino = v->vec + v->ce;
 
-    // Desplazamos los elementos mayores
+    //desplazamos los elementos mayores
     while (actual >= v->vec && cmp(nodo.dato, actual->dato) < 0) {
         *destino = *actual;
         destino--;
         actual--;
     }
 
-    // Insertamos el nuevo nodo
+    //insertamos el nuevo nodo
     *destino = nodo;
     v->ce++;
 
     return 1;
 }
 
-// Funci�n de b�squeda binaria
+//funcion de busqueda binaria
 void* Vector_bsearch(Vector* v, void* valor, Cmp cmp) {
     tNodo* ini = v->vec;
     tNodo* fin = v->vec + v->ce - 1;
@@ -131,8 +132,8 @@ void* Vector_bsearch(Vector* v, void* valor, Cmp cmp) {
         tNodo* medio = ini + (fin - ini) / 2;
         int comp = cmp(valor, medio->dato);
 
-        if (comp == 0) {   // Se encontr� el valor
-            return medio->dato;  // Se retorna la direccion
+        if (comp == 0) {   //se encontro el valor
+            return medio->dato;  //se retorna la direccion
         }
         else
         {
@@ -143,27 +144,27 @@ void* Vector_bsearch(Vector* v, void* valor, Cmp cmp) {
             }
         }
     }
-    return NULL;  // No se encontr� el valor
+    return NULL;  //no se encontro el valor
 }
 
 int Vector_getByPos(Vector* v, int pos, void * valor, size_t tamValor) {
-    // 1. Validar que el vector exista, no esté vacío y la posición esté dentro del rango [0, ce - 1]
+    //validar que el vector exista, no este vacio y la posicion este dentro del rango [0, ce - 1]
     if (!v || v->ce == 0 || pos < 0 || pos >= v->ce) {
-        return -1; // Posición incorrecta o vector no válido
+        return -1; // Posicion incorrecta o vector no valido
     }
 
-    // 2. Obtener el nodo en la posición deseada
+    //obtener el nodo en la posicion deseada
     tNodo * nodo = (v->vec) + pos;
 
-    // 3. Validar que el puntero a los datos no sea NULL
+    //validar que el puntero a los datos no sea NULL
     if (!nodo->dato || !valor) {
         return -1;
     }
 
-    // 4. Copiar exactamente tamValor bytes al buffer de destino
+    //copiar exactamente tamValor bytes al buffer de destino
     memcpy(valor, nodo->dato, tamValor);
 
-    return 1; // Éxito
+    return 1; 
 }
 
 void* Vector_getRefByPos(Vector* v, int pos){
@@ -203,7 +204,7 @@ void Vector_map(Vector*v,Accion accion){
   }
 }
 
-//Funci�n de comparaci�n entre dos Nodos
+//funcion de comparacion entre dos Nodos
 int compararInt(const void* a, const void* b) {
     int valorA = *(int*)a;
     int valorB = *(int*)b;

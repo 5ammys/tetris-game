@@ -2,30 +2,28 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Tetris2" />
+		<Option title="TPGame" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/Tetris2" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/JuegoDeLaVida" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="../../SDL_dev_lib/SDL2-2.32.4/x86_64-w64-mingw32/include" />
-					<Add directory="../../SDL_dev_lib/SDL2_image-2.8.12/x86_64-w64-mingw32/include" />
-					<Add directory="../../SDL_dev_lib/SDL2_ttf-2.24.0/x86_64-w64-mingw32/include" />
+					<Add directory="../../../SDL_dev_lib/SDL2-2.32.4/x86_64-w64-mingw32/include" />
+					<Add directory="../../../SDL_dev_lib/SDL2_image-2.8.12/x86_64-w64-mingw32/include" />
 				</Compiler>
 				<Linker>
-					<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf" />
-					<Add directory="../../SDL_dev_lib/SDL2-2.32.4/x86_64-w64-mingw32/lib" />
-					<Add directory="../../SDL_dev_lib/SDL2_image-2.8.12/x86_64-w64-mingw32/lib" />
-					<Add directory="../../SDL_dev_lib/SDL2_ttf-2.24.0/x86_64-w64-mingw32/lib" />
+					<Add option="-lmingw32 -lSDL2main -lSDL2" />
+					<Add directory="../../../SDL_dev_lib/SDL2_image-2.8.12/x86_64-w64-mingw32/lib" />
+					<Add directory="../../../SDL_dev_lib/SDL2-2.32.4/x86_64-w64-mingw32/lib" />
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/Tetris2" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/JuegoDeLaVida" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -38,14 +36,16 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Wall" />
-			<Add directory="D:/Users/Juan-PC/Desktop/SDL2-2.32.4/x86_64-w64-mingw32/include" />
-			<Add directory="D:/Users/Juan-PC/Desktop/SDL2_image-2.8.12/x86_64-w64-mingw32/include" />
+			<Add option="-std=c99" />
+			<Add directory="SDL2_Image/include" />
+			<Add directory="SDL2/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf" />
-			<Add directory="D:/Users/Juan-PC/Desktop/SDL2_image-2.8.12/x86_64-w64-mingw32/lib" />
-			<Add directory="D:/Users/Juan-PC/Desktop/SDL2-2.32.4/x86_64-w64-mingw32/lib" />
+			<Add option="-lSDL2" />
+			<Add option="-lSDL2main" />
+			<Add option="-lSDL2_image" />
+			<Add directory="SDL2/lib" />
+			<Add directory="SDL2_Image/lib" />
 		</Linker>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
@@ -58,12 +58,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures/Game.h" />
+		<Unit filename="structures/Panel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="structures/Panel.h" />
 		<Unit filename="structures/Piece.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures/Piece.h" />
-		<Extensions>
-			<lib_finder disable_auto="1" />
-		</Extensions>
+		<Unit filename="structures/Vector.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="structures/Vector.h" />
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
