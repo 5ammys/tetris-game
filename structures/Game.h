@@ -12,12 +12,7 @@
 #include "Piece.h"
 #include "Vector.h"
 #include "Panel.h"
-
-#define WINDOW_W 500
-#define WINDOW_H 640
-
-#define BOARD_OFFSET_X 20
-#define BOARD_OFFSET_Y 20
+#include "config.h"
 
 typedef struct{
   SDL_Window* window;
@@ -35,7 +30,7 @@ typedef struct{
 }Game;
 
 Game* Game_create();
-void Game_init(Game* game, const char* title, int x, int y, int w, int h, int flags, int delay);
+int Game_init(Game* game, const char* title, int x, int y, int w, int h, int flags);
 void Game_update(Game* game);
 void Game_render(Game* game);
 void Game_clean(Game* game);

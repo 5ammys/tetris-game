@@ -15,7 +15,7 @@ Game* Game_create(){
   return game;
 }
 
-void Game_init(Game* game, const char* title, int x, int y, int w, int h, int flags, int delay){
+int Game_init(Game* game, const char* title, int x, int y, int w, int h, int flags){
   if(SDL_Init(SDL_INIT_VIDEO) < 0){
     SDL_Log("Failed to initialize SDL: %s\n", SDL_GetError());
   }
@@ -23,14 +23,14 @@ void Game_init(Game* game, const char* title, int x, int y, int w, int h, int fl
   game->window = SDL_CreateWindow(title, x, y, w, h, flags);
   if(!game->window){
     SDL_Log("Failed to create window: %s\n", SDL_GetError());
-    return;
+    return -1;
   }
 
   game->renderer = SDL_CreateRenderer(game->window, -1, SDL_RENDERER_ACCELERATED);
   if(!game->renderer){
     SDL_Log("Failed to create renderer: %s\n", SDL_GetError());
     SDL_DestroyWindow(game->window);
-    return;
+    return -1;
   }
 
   srand((unsigned int) time(NULL));
@@ -44,6 +44,8 @@ void Game_init(Game* game, const char* title, int x, int y, int w, int h, int fl
   game->nextPiece    = Piece_createRandom(&game->piecesVector);
   game->lastDropTime = SDL_GetTicks();
   game->dropInterval = 1000;
+
+  return 0;
 }
 
 void Game_restart(Game* game){
@@ -87,7 +89,7 @@ void Game_update(Game* game){
                                 game->currentPiece.row,
                                 game->currentPiece.col)){
         game->isGameOver = true;
-        SDL_SetWindowTitle(game->window, "Tetris - GAME OVER (R para reiniciar)");
+        SDL_SetWindowTitle(game->window, "Tetris - GAME OVER");
       } else {
         char title[128];
         sprintf(title, "Tetris - Score: %d | Level: %d | Lines: %d",
@@ -143,6 +145,8 @@ void Game_handleEvents(Game* game) {
             return;
         }
 
+
+
         if (event.type == SDL_KEYDOWN) {
             SDL_Keycode key = event.key.keysym.sym;
 
@@ -151,7 +155,7 @@ void Game_handleEvents(Game* game) {
                 return;
             }
 
-            if (key == SDLK_r && game->isGameOver) {
+            if (key == SDLK_r) {
                 Game_restart(game);
                 return;
             }

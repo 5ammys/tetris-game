@@ -13,52 +13,64 @@ int Vector_create(Vector*v, unsigned tamVector){
    return 1;
 }
 
-void Vector_destroy(Vector*v){
+void Vector_destroy(Vector* v) {
+    if (!v) return;
+
+    for (size_t i = 0; i < v->ce; i++) {
+        if (v->vec[i].dato) {
+            free(v->vec[i].dato);
+            v->vec[i].dato = NULL;
+        }
+    }
+
     free(v->vec);
+    v->vec = NULL;
+
     v->ce = 0;
     v->tam = 0;
 }
 
-int Vector_append(Vector *v, void* elemento, size_t tamDato){
 
-    if(v->ce == v->tam){
-        if(_resize(v,v->tam+2) == -1){
-            return 0;
+int Vector_append(Vector *v, void* elemento, size_t tamDato) {
+    if (!v || !elemento) return 0;
+
+    if (v->ce == v->tam) {
+        if (_resize(v, v->tam + 2) == -1) {
+            return 0; // Falla de memoria en redimensión
         }
     }
 
-    tNodo nodo;
-    nodo.dato = malloc(tamDato);
-    if(!nodo.dato) return 0;
+    tNodo* nuevoNodo = v->vec + v->ce;
 
-    memcpy(nodo.dato,elemento,tamDato);
-    nodo.tam = tamDato;
+    nuevoNodo->dato = malloc(tamDato);
+    if (!nuevoNodo->dato) return 0;
 
-    (v->vec + v->ce)->dato = nodo.dato;
-    (v->vec + v->ce)->tam = nodo.tam;
+    memcpy(nuevoNodo->dato, elemento, tamDato);
+    nuevoNodo->tam = tamDato;
+
     v->ce++;
 
     return 1;
 }
 
-//Funcion para insertar en orden y no repetir
-int Vector_insertInOrderNoRepeat(Vector* v, void* elemento, size_t tamDato, Cmp cmp) {
+int Vector_insertInOrderNoRepeat(Vector* v, void* elemento, size_t tamDato, Cmp cmp)
+{
+    void* search = Vector_bsearch(v, elemento, cmp);
+
+    if (search) {
+        memcpy(search, elemento, tamDato);
+        return 2;
+    }
 
     tNodo nodo;
-    nodo.dato = malloc(tamDato);  // Reservamos memoria para el nuevo dato
-    if (!nodo.dato) return -1;
+    nodo.dato = malloc(tamDato);
+
+    if (!nodo.dato)
+        return -1;
 
     memcpy(nodo.dato, elemento, tamDato);
     nodo.tam = tamDato;
 
-    void* search = Vector_bsearch(v,nodo.dato,cmp); //busca el elemento por la condicion
-
-    if(search){
-        memcpy(search,nodo.dato,tamDato); //si lo encuentra lo reemplaza y retorna 2
-        return 2;
-    }
-
-    // Verificar si hay espacio para el nuevo elemento
     if (v->ce == v->tam) {
         if (_resize(v, v->tam + 2) == -1) {
             free(nodo.dato);
@@ -66,28 +78,25 @@ int Vector_insertInOrderNoRepeat(Vector* v, void* elemento, size_t tamDato, Cmp 
         }
     }
 
-    // Puntero al �ltimo nodo v�lido
-    tNodo* actual = v->vec + v->ce - 1;
+    size_t i = v->ce;
 
-    // Puntero a la posici�n donde vamos a insertar
-    tNodo* destino = v->vec + v->ce;
-
-    // Desplazamos los elementos mayores
-    while (actual >= v->vec && cmp(nodo.dato, actual->dato) < 0) {
-        *destino = *actual;
-        destino--;
-        actual--;
+    while (i > 0 &&
+           cmp(nodo.dato, v->vec[i - 1].dato) < 0) {
+        v->vec[i] = v->vec[i - 1];
+        i--;
     }
 
-    // Insertamos el nuevo nodo
-    *destino = nodo;
+    v->vec[i] = nodo;
     v->ce++;
+
     return 1;
 }
-
 // Funci�n para insertar en orden
 int Vector_insertInOrder(Vector* v, void* elemento, size_t tamDato, Cmp cmp) {
-
+    if(v->ce == 0){
+        Vector_append(v, elemento, tamDato);
+        return 1;
+    }
     // Verificar si hay espacio para el nuevo elemento
     if (v->ce == v->tam) {
         if (_resize(v, v->tam + 2) == -1) {

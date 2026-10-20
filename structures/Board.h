@@ -4,10 +4,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include "Piece.h"
-
-#define BOARD_ROWS 20
-#define BOARD_COLS 10
-#define BOARD_CELLS_SIZE 30
+#include "config.h"
 
 typedef struct{
   int cells[BOARD_ROWS][BOARD_COLS];
@@ -28,8 +25,6 @@ void Board_lockPiece(Board *b, const Piece *p);
 int Board_clearLines(Board *b);
 
 void Board_updateScore(Board *b, int linesCleared);
-
-bool Board_isGameOver(const Board *b);
 
 void Board_draw(const Board *b, SDL_Renderer *renderer, int offsetX, int offsetY, int cellSize);
 

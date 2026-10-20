@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdio.h>
 
-
 typedef struct{
     void* dato;
     unsigned tam;

@@ -3,21 +3,10 @@
 
 #include <SDL2/SDL.h>
 #include "Piece.h"
+#include "config.h"
 
-#define BOARD_OFFSET_X 20
-#define BOARD_OFFSET_Y 20
 
-#define BOARD_ROWS 20
-#define BOARD_COLS 10
-#define BOARD_CELLS_SIZE 30
-
-#define PANEL_X       340    /* Origen X del panel (px) */
-#define PANEL_W       140    /* Ancho del panel (px)    */
-#define PANEL_CELL     22    /* Celda del preview "NEXT" */
-#define PIXEL_SIZE      3    /* Tamaño de cada pixel del font (px) */
-#define PIXEL_SIZE_BIG  6    /* Tamaño grande para texto de game over */
-
-typedef struct { char ch; Uint8 rows[5]; } Glyph;
+typedef struct { char ch; Uint8 rows[5]; } CharPixel;
 
 void Panel_drawString(SDL_Renderer* r, const char* str, int x, int y, int ps, SDL_Color c);
 

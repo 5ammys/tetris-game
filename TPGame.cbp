@@ -63,6 +63,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures/Vector.h" />
+		<Unit filename="structures/config.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

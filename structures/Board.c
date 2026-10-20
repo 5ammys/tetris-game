@@ -132,13 +132,6 @@ void Board_drawGhost(const Board *b, const Piece *p, SDL_Renderer *renderer, int
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
-bool Board_isGameOver(const Board *b) {
-    for(int c = 0; c < BOARD_COLS; c++) {
-        if(b->cells[0][c] != 0) return true;
-    }
-    return false;
-}
-
 int Board_clearLines(Board *b) {
     int linesCleared = 0;
 

@@ -1,10 +1,11 @@
+#include <SDL2/SDL.h>
 #include "Panel.h"
 
 void Panel_drawChar(SDL_Renderer* r, char ch, int x, int y, int ps, SDL_Color c) {
     int i, row, col;
     Uint8 pattern[5] = {0};
 
-    Glyph FONT[] = {
+    CharPixel FONT[] = {
       /* Dígitos */
       {'0', {7,5,5,5,7}},
       {'1', {2,6,2,2,7}},
@@ -19,6 +20,24 @@ void Panel_drawChar(SDL_Renderer* r, char ch, int x, int y, int ps, SDL_Color c)
       /* Letras (mayúsculas) */
       {'A', {2,5,7,5,5}},
       {'C', {7,4,4,4,7}},
+      {'D', {6,5,5,5,6}},
+      {'E', {7,4,6,4,7}},
+      {'F', {7,4,6,4,4}},
+      {'G', {7,4,6,5,7}},
+      {'H', {5,5,7,5,5}},
+      {'I', {7,2,2,2,7}},
+      {'J', {1,1,1,5,7}},
+      {'L', {4,4,4,4,7}},
+      {'M', {5,7,5,5,5}},
+      {'N', {5,5,7,5,5}},
+      {'O', {7,5,5,5,7}},
+      {'P', {6,5,6,4,4}},
+      {'R', {6,5,6,5,5}},
+      {'S', {7,4,7,1,7}},
+      {'T', {7,2,2,2,2}},
+      {'U', {5,5,5,5,7}},
+      {'V', {5,5,5,2,2}},
+      {'X', {5,5,2,5,5}},
       {'E', {7,4,6,4,7}},
       {'G', {7,4,6,5,7}},
       {'I', {7,2,2,2,7}},
@@ -31,10 +50,19 @@ void Panel_drawChar(SDL_Renderer* r, char ch, int x, int y, int ps, SDL_Color c)
       {'T', {7,2,2,2,2}},
       {'V', {5,5,5,2,2}},
       {'X', {5,5,2,5,5}},
+      {'P', {6,5,6,4,4}},
+      {'U', {5,5,5,5,7}},
+      /* Símbolos */
+      {'<', {1,2,4,2,1}},
+      {'>', {4,2,1,2,4}},
+      {'v', {2,2,2,7,2}},
+      {'^', {2,7,2,2,2}},
       {' ', {0,0,0,0,0}},
+      {':', {0,2,0,2,0}},
+      {'-', {0,0,7,0,0}},
     };
 
-    int FONT_SIZE = sizeof(FONT) / sizeof(Glyph);
+    int FONT_SIZE = sizeof(FONT) / sizeof(CharPixel);
 
     for(i = 0; i < FONT_SIZE; i++) {
         if(FONT[i].ch == ch) { memcpy(pattern, FONT[i].rows, 5); break; }
@@ -136,14 +164,14 @@ void Panel_render(SDL_Renderer* r, const Piece* nextPiece, int score, int level,
     cur_y += 10;
 
     /* ---- Controles (indicadores de color) ---- */
-    SDL_Color hint = {90, 90, 110, 255};
-    Panel_drawString(r, "CONTROLS", px + 4, cur_y, 2, hint);
+    SDL_Color brief = {8, 206, 255, 255};
+    Panel_drawString(r, "CONTROLS", px + 4, cur_y, 2, brief);
     cur_y += 5*2 + 8;
 
-    SDL_Color hintVal = {130, 130, 150, 255};
-    Panel_drawString(r, "ARROWS", px + 4, cur_y,  2, hintVal); cur_y += 5*2+5;
-    Panel_drawString(r, "SPACE",  px + 4, cur_y,  2, hintVal); cur_y += 5*2+5;
-    Panel_drawString(r, "R REST", px + 4, cur_y,  2, hintVal);
+    Panel_drawString(r, "^ < > v", px + 4, cur_y,  2, brief); cur_y += 5*2+5;
+    Panel_drawString(r, "SPACE: DROP",  px + 4, cur_y,  2, brief); cur_y += 5*2+5;
+    Panel_drawString(r, "R: RESTART", px + 4, cur_y,  2, brief); cur_y += 5*2+5;
+    Panel_drawString(r, "ESC: EXIT",  px + 4, cur_y,  2, brief); 
 }
 
 void Panel_gameOver(SDL_Renderer* r) {
